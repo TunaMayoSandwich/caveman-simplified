@@ -8,7 +8,8 @@ HEADING_REGEX = re.compile(r"^(#{1,6})\s+(.*)", re.MULTILINE)
 BULLET_REGEX = re.compile(r"^\s*[-*+]\s+", re.MULTILINE)
 
 # crude but effective path detection
-PATH_REGEX = re.compile(r"(\./|\../|/|[A-Za-z]:\\)[\w\-/\\\.]+")
+# Fixed: use non-capturing group for prefix, and handle relative paths without leading ./ or /
+PATH_REGEX = re.compile(r"(?:\./|\.\./|/|[A-Za-z]:)?[\w\-/\\\.]+")
 
 
 class ValidationResult:

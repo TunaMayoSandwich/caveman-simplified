@@ -94,6 +94,13 @@ def compress_file(filepath: Path) -> bool:
     original_text = filepath.read_text(errors="ignore")
     backup_path = filepath.with_name(filepath.stem + ".original.md")
 
+    # Check if backup already exists to prevent accidental overwriting
+    if backup_path.exists():
+        print(f"⚠️ Backup file already exists: {backup_path}")
+        print("The original backup may contain important content.")
+        print("Aborting to prevent data loss. Please remove or rename the backup file if you want to proceed.")
+        return False
+
     # Step 1: Compress
     print("🧠 Compressing with Claude...")
     compressed = call_claude(build_compress_prompt(original_text))
