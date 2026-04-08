@@ -19,13 +19,15 @@
   <a href="#benchmarks">Benchmarks</a> •
   <a href="#before--after">Before/After</a> •
   <a href="#intensity-levels">Intensity Levels</a> •
+  <a href="#caveman-skills">Skills</a> •
   <a href="#caveman-compress">Compress</a> •
+  <a href="#evals">Evals</a> •
   <a href="#why">Why</a>
 </p>
 
 ---
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill/plugin and Codex plugin that makes agent talk like caveman — cutting **~75% of output tokens** while keeping full technical accuracy. Plus a companion tool that compresses your memory files to cut **~45% of input tokens** every session.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill/plugin and Codex plugin that makes agent talk like caveman — cutting **~75% of output tokens** while keeping full technical accuracy. Now with [文言文 mode](#文言文-wenyan-mode), [terse commits](#caveman-commit), [one-line code reviews](#caveman-review), and a [compression tool](#caveman-compress) that cuts **~45% of input tokens** every session.
 
 Based on the viral observation that caveman-speak dramatically reduces LLM token usage without losing technical substance. So we made it a one-line install.
 
@@ -165,26 +167,11 @@ Codex:
 4. Search `Caveman`
 5. Install plugin
 
-### Windows (VS Code Codex)
-
-If you are using the VS Code Codex extension on Windows:
-
-1. Clone this repo locally
-2. Open the cloned repo in VS Code
-3. Open Codex Settings → Plugins
-4. Look under the repo/local marketplace for `Caveman`
-5. Click `Install`
-6. Run `Developer: Reload Window`
-7. Verify `Caveman` appears under installed plugins
-
-This repo includes a repo-local marketplace entry at `.agents/plugins/marketplace.json`, so the plugin can be discovered directly from the cloned repository without adding personal machine-specific paths to the repo.
-
-Install once. Use in all sessions after that.
-
-One rock. That it.
-
 > [!NOTE]
-> **Windows users:** This repo uses symlinks. On Windows, enable `git config core.symlinks true` before cloning (requires developer mode or admin). The plugin installer resolves symlinks to real files at install time, so symlinks work transparently after installation.
+> **Windows Codex users:** Clone repo → VS Code → Codex Settings → Plugins → find `Caveman` under local marketplace → Install → Reload Window. Also enable `git config core.symlinks true` before cloning (requires developer mode or admin).
+
+Install once. Use in all sessions after that. One rock. That it.
+
 ## Usage
 
 Trigger with:
@@ -204,11 +191,26 @@ Sometimes full caveman too much. Sometimes not enough. Now you pick:
 | **Lite** | `/caveman lite` or `$caveman lite` | Drop filler, keep grammar. Professional but no fluff |
 | **Full** | `/caveman full` or `$caveman full` | Default caveman. Drop articles, fragments, full grunt |
 | **Ultra** | `/caveman ultra` or `$caveman ultra` | Maximum compression. Telegraphic. Abbreviate everything |
-| **Wenyan-Lite** | `/caveman wenyan-lite` or `$caveman wenyan-lite` | Semi-classical 文言文. Less intense, grammar intact |
-| **Wenyan-Full** | `/caveman wenyan` or `/caveman wenyan-full` | Full 文言文. Maximum classical terseness |
-| **Wenyan-Ultra** | `/caveman wenyan-ultra` or `$caveman wenyan-ultra` | Extreme abbreviation, classical Chinese feel |
 
 Level stick until you change it or session end.
+
+### 文言文 (Wenyan) Mode
+
+Caveman go ancient. Classical Chinese literary compression — same technical accuracy, but in the most token-efficient written language humans ever invented.
+
+| Level | Trigger | What it do |
+|-------|---------|------------|
+| **Wenyan-Lite** | `/caveman wenyan-lite` | Semi-classical. Grammar intact, filler gone |
+| **Wenyan-Full** | `/caveman wenyan` | Full 文言文. Maximum classical terseness |
+| **Wenyan-Ultra** | `/caveman wenyan-ultra` | Extreme. Ancient scholar on a budget |
+
+```
+English:  "Your component re-renders because you create a new object reference each render."
+Caveman:  "New object ref each render. Wrap in useMemo."
+Wenyan:   "物出新參照，致重繪。useMemo Wrap之。"
+```
+
+Same answer. Different era. Fewer token.
 
 ## What Caveman Do
 
@@ -222,6 +224,58 @@ Level stick until you change it or session end.
 | Articles (a, an, the) | 💀 Gone |
 | Pleasantries | 💀 "Sure I'd be happy to" is dead |
 | Hedging | 💀 "It might be worth considering" extinct |
+
+## Caveman Skills
+
+Caveman not just talk different. Caveman have **tools**:
+
+### caveman-commit
+
+Terse commit messages. Conventional Commits format. Subject ≤50 chars. Body only when "why" not obvious.
+
+```
+❌  "feat: add a new endpoint to get user profile information from the database"
+
+✅  feat(api): add GET /users/:id/profile
+```
+
+Trigger: `/caveman-commit` or just ask for a commit message.
+
+### caveman-review
+
+One-line code review comments. Location, problem, fix. No throat-clearing.
+
+```
+❌  "I noticed that on line 42 you're not checking if the user object
+    is null before accessing the email property. This could potentially
+    cause a crash if the user is not found in the database."
+
+✅  L42: 🔴 bug: user can be null after .find(). Add guard before .email.
+```
+
+Severity prefix tell you what matter:
+- `🔴 bug:` — broken, will cause incident
+- `🟡 risk:` — works but fragile
+- `🔵 nit:` — style, author can ignore
+- `❓ q:` — genuine question
+
+Trigger: `/caveman-review` or ask for a code review.
+
+## Evals
+
+Caveman not just claim 75%. Caveman **prove** it.
+
+The `evals/` directory has a three-arm eval harness that measures real token compression against a proper control — not just "verbose vs skill" but "terse vs skill". Because comparing caveman to verbose Claude conflate the skill with generic terseness. That cheating. Caveman not cheat.
+
+```bash
+# Run the eval (needs claude CLI)
+uv run python evals/llm_run.py
+
+# Read results (no API key, runs offline)
+uv run --with tiktoken python evals/measure.py
+```
+
+Snapshots committed to git. CI runs free. Every number change reviewable as diff. Add a skill, add a prompt — harness pick it up automatically.
 
 ## Why
 
