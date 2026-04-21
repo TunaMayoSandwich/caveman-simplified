@@ -7,7 +7,7 @@
 <p align="center"><b>why use many pretokens when few do trick</b></p>
 
 <p align="center">
-  <img src="https://github.com/TunaMayoSandwich/caveman-simplified/blob/main/image.png" />
+  <img src="https://github.com/TunaMayoSandwich/caveman-simplified/blob/main/latest.png" />
 </p>
 
 ---
