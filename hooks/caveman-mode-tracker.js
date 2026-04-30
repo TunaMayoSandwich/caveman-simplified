@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { execFileSync } = require('child_process');
 const { getDefaultMode, safeWriteFlag, readFlag, VALID_MODES } = require('./caveman-config');
 
 // Modes handled by their own slash commands (/caveman-commit, etc.) — not
@@ -32,6 +33,25 @@ process.stdin.on('end', () => {
           safeWriteFlag(flagPath, mode);
         }
       }
+    }
+
+    // /caveman-stats — block the prompt and inject stats output as the
+    // hook's reason. The script reads the active session log, so we pass
+    // transcript_path through when Claude Code provides it.
+    if (prompt === '/caveman-stats' || prompt === '/caveman:caveman-stats') {
+      try {
+        const statsPath = path.join(__dirname, 'caveman-stats.js');
+        const argv = [statsPath];
+        if (data.transcript_path) argv.push('--session-file', data.transcript_path);
+        const out = execFileSync(process.execPath, argv, { encoding: 'utf8', timeout: 5000 });
+        process.stdout.write(JSON.stringify({ decision: 'block', reason: out.trim() }));
+      } catch (e) {
+        process.stdout.write(JSON.stringify({
+          decision: 'block',
+          reason: 'caveman-stats: could not run stats script.\nTry manually: node hooks/caveman-stats.js'
+        }));
+      }
+      return;
     }
 
     // Match /caveman commands

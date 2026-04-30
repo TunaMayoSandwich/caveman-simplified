@@ -159,6 +159,7 @@ Auto-activation is built in for Claude Code, Gemini CLI, and the repo-local Code
 | caveman-review | Y | — | Y | Y | Y | Y | Y |
 | caveman-compress | Y | Y | Y | Y | Y | Y | Y |
 | caveman-help | Y | — | Y | Y | Y | Y | Y |
+| caveman-stats | Y | — | — | — | — | — | — |
 
 > [!NOTE]
 > Auto-activation works differently per agent: Claude Code uses SessionStart hooks, this repo's Codex dogfood setup uses `.codex/hooks.json`, Gemini uses context files. Cursor/Windsurf/Cline/Copilot can be made always-on, but `npx skills add` installs only the skill, not the repo rule/instruction files.
@@ -264,6 +265,7 @@ Auto-activates via `GEMINI.md` context file. Also ships custom Gemini commands:
 - `/caveman` — switch intensity level (lite/full/ultra/wenyan)
 - `/caveman-commit` — generate terse commit message
 - `/caveman-review` — one-line code review
+- `/caveman-stats` — real token usage + estimated savings (reads session log)
 
 </details>
 
@@ -370,6 +372,26 @@ Level stick until you change it or session end.
 ### caveman-help
 
 `/caveman-help` — quick-reference card. All modes, skills, commands, one command away.
+
+### caveman-stats
+
+`/caveman-stats` — real token usage for current session + estimated savings. Reads the Claude Code session JSONL directly so the numbers are not the model's guess. Savings estimate uses the 65% mean per-task figure from `benchmarks/`; only `full` mode has measured data.
+
+```
+Caveman Stats
+──────────────────────────────────
+Session:  ...projects/my-app/abc123.jsonl
+Turns:    47
+──────────────────────────────────
+Output tokens:         3,210
+Cache-read tokens:     128,400
+──────────────────────────────────
+Est. without caveman:  9,171
+Est. tokens saved:     5,961 (~65%)
+Savings est. from benchmarks/ (mean per-task). Actual varies by task.
+```
+
+Claude Code only — needs the hook system to read the session transcript.
 
 ### caveman-compress
 
